@@ -11,7 +11,12 @@ export default function App() {
   const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [error, setError] = useState(""); const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    if (Platform.OS === "web" && "serviceWorker" in navigator && process.env.NODE_ENV === "production") {
+    if (Platform.OS !== "web") return;
+    const manifest = document.querySelector('link[rel="manifest"]') ?? document.createElement("link");
+    manifest.setAttribute("rel", "manifest");
+    manifest.setAttribute("href", "/manifest.json");
+    if (!manifest.parentNode) document.head.appendChild(manifest);
+    if ("serviceWorker" in navigator && process.env.NODE_ENV === "production") {
       window.addEventListener("load", () => { void navigator.serviceWorker.register("/sw.js").catch((e) => console.error("Falha ao registrar service worker:", e)); }, { once: true });
     }
   }, []);
