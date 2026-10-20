@@ -125,3 +125,5 @@ git --version
 ## Estado da validação
 
 A configuração e o código estão versionados no GitHub. O build precisa ser confirmado nos logs da Vercel depois da importação do projeto, e as operações com dados reais precisam ser verificadas após configurar o Firebase e as regras de segurança.
+
+AZUNAMATRINGA
