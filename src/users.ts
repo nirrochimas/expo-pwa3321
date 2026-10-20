@@ -4,7 +4,7 @@ import { db } from "./firebase";
 export type UserRecord = { id: string; nome: string; email: string };
 const usersCollection = collection(db, "usuarios");
 
-export function subscribeUsers(onData: (users: UserRecord[]) => void, onError: (error: Error) => void): Unsubscribe {
+export function subscribeUsers(onData: (users: UserRecord[]) => void, onError: (error: Error & { code?: string }) => void): Unsubscribe {
   return onSnapshot(query(usersCollection, orderBy("nome")), (snapshot) => {
     onData(snapshot.docs.map((item) => ({ id: item.id, nome: String(item.data().nome ?? ""), email: String(item.data().email ?? "") })));
   }, onError);
