@@ -2,19 +2,22 @@ import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverT
 import { db } from "./firebase";
 
 export type UserRecord = { id: string; nome: string; email: string };
-const usersCollection = collection(db, "usuarios");
+function usersCollection() {
+  if (!db) throw new Error("Firebase não configurado. Defina as variáveis EXPO_PUBLIC_FIREBASE_* na Vercel.");
+  return collection(db, "usuarios");
+}
 
 export function subscribeUsers(onData: (users: UserRecord[]) => void, onError: (error: Error & { code?: string }) => void): Unsubscribe {
-  return onSnapshot(query(usersCollection, orderBy("nome")), (snapshot) => {
+  return onSnapshot(query(usersCollection(), orderBy("nome")), (snapshot) => {
     onData(snapshot.docs.map((item) => ({ id: item.id, nome: String(item.data().nome ?? ""), email: String(item.data().email ?? "") })));
   }, onError);
 }
 export async function createUser(nome: string, email: string) {
-  await addDoc(usersCollection, { nome: nome.trim(), email: email.trim().toLowerCase(), createdAt: serverTimestamp() });
+  await addDoc(usersCollection(), { nome: nome.trim(), email: email.trim().toLowerCase(), createdAt: serverTimestamp() });
 }
 export async function updateUser(id: string, nome: string, email: string) {
-  await updateDoc(doc(db, "usuarios", id), { nome: nome.trim(), email: email.trim().toLowerCase(), updatedAt: serverTimestamp() });
+  await updateDoc(doc(usersCollection(), id), { nome: nome.trim(), email: email.trim().toLowerCase(), updatedAt: serverTimestamp() });
 }
 export async function removeUser(id: string) {
-  await deleteDoc(doc(db, "usuarios", id));
+  await deleteDoc(doc(usersCollection(), id));
 }
