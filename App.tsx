@@ -23,7 +23,7 @@ export default function App() {
   }, []);
   function validate() {
     if (!nome.trim()) return "Informe o nome.";
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email.trim())) return "Informe um e-mail válido.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return "Informe um e-mail válido.";
     return "";
   }
   async function submit() {
