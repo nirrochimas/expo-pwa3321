@@ -2,12 +2,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": null,
-  "rewrites": [
-    {
-      "source": "/((?!sw\\.js|manifest\\.json|icons/).*)",
-      "destination": "/"
-    }
-  ],
   "headers": [
     {
       "source": "/sw.js",
