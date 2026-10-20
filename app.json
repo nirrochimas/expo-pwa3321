@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "CRUD Firebase",
+    "slug": "expo-pwa3321",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "name": "CRUD Firebase",
+      "shortName": "CRUD Firebase",
+      "themeColor": "#0f172a",
+      "backgroundColor": "#f8fafc",
+      "description": "Cadastro e listagem de nome e e-mail usando Firebase."
+    }
+  }
+}
