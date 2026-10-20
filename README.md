@@ -74,7 +74,7 @@ Este exemplo não inclui autenticação de usuários. Antes de disponibilizar o 
 
 - Manifesto: `public/manifest.json`.
 - Ícone: `public/icons/icon.svg`.
-- O build gera o service worker em `dist/sw.js) com Workbox e pré-armazena arquivos estáticos do app.
+- O build gera o service worker em `dist/sw.js` com Workbox e pré-armazena arquivos estáticos do app.
 - O service worker é registrado no navegador em produção.
 - O cadastro, a listagem, a edição e a exclusão no Firestore precisam de conexão com a internet. O service worker não armazena em cache as respostas do Firestore.
 
@@ -84,7 +84,7 @@ O repositório contém um `vercel.json` com o comando de build e a pasta de saí
 
 1. Acesse [Vercel — New Project](https://vercel.com/new) e conecte a conta GitHub que tem acesso ao repositório.
 2. Importe `nirrochimas/expo-pwa3321`.
-3. Use `npm run build) como **Build Command** e `dist` como **Output Directory**. O `vercel.json` já define essas opções.
+3. Use `npm run build` como **Build Command** e `dist` como **Output Directory**. O `vercel.json` já define essas opções.
 4. Selecione uma versão de Node.js compatível com o campo `engines` do `package.json` e com o Expo configurado no projeto.
 5. Configure as variáveis do Firebase descritas acima e execute o deploy.
 
