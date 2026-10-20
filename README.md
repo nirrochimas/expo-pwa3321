@@ -1,37 +1,127 @@
-# Expo + React Native Web + PWA + Firebase
+# CRUD de Usuários — Expo, PWA e Firebase
 
-CRUD de nome e e-mail, preparado para build web e deploy contínuo pela Vercel. O build e as dependências são instalados na infraestrutura da Vercel; não exige testes locais.
+Aplicativo web responsivo para cadastrar e gerenciar usuários com **nome e e-mail**. Desenvolvido com Expo e React Native Web, usa Cloud Firestore como banco de dados e está preparado para publicação na Vercel como Progressive Web App (PWA).
 
-## Stack
+## Funcionalidades do aplicativo
 
-- Expo SDK 58, React 19.2.3, React Native 0.86 e React Native Web 0.21.
-- TypeScript, Firebase JavaScript SDK e Cloud Firestore.
-- PWA: manifesto e service worker gerado pelo Workbox.
-- Vercel para hospedagem HTTPS e builds automáticos.
+### Cadastro
+- Formulário com os campos **Nome** e **E-mail**.
+- Validação para exigir um nome e um endereço de e-mail válido.
+- Normalização do e-mail para minúsculas antes de salvar.
+- Feedback de sucesso ou erro ao salvar.
+- Bloqueio do botão de cadastro enquanto a operação está em andamento.
 
-## Deploy na Vercel
+### Listagem
+- Exibição dos usuários armazenados na coleção `usuarios` do Cloud Firestore.
+- Atualização em tempo real por meio de uma assinatura do Firestore.
+- Ordenação dos registros pelo nome.
+- Estado vazio quando ainda não há cadastros.
+- Mensagens para problemas de configuração ou permissão do banco.
 
-1. Acesse https://vercel.com/new, conecte o GitHub e importe `nirrochimas/expo-pwa3321`.
-2. Use `npm run build` como Build Command e `dist` como Output Directory; o `vercel.json` já define isso.
-3. Em Settings → Build and Deployment → Node.js Version, selecione Node 22.x (22.13 ou superior) ou Node 24.x (24.3 ou superior), conforme suporte atual da Vercel.
-4. Faça o deploy e confira os logs. `scripts/print-env.cjs` registra as versões de Node, npm, npx e git.
+### Edição e exclusão
+- Ação **Editar** preenche o formulário com os dados existentes.
+- A edição salva as mudanças no documento correspondente.
+- A ação **Excluir** pede confirmação antes de remover um registro.
+- O aplicativo apresenta mensagens de sucesso e erro para as operações.
 
-## Configurar Firebase
+## Tecnologias
 
-1. No Firebase Console, crie/selecione um projeto e habilite Cloud Firestore.
-2. Registre um app Web e copie a configuração do Firebase.
-3. Na Vercel, Settings → Environment Variables, adicione para Preview e Production: `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`, `EXPO_PUBLIC_FIREBASE_PROJECT_ID`, `EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET`, `EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` e `EXPO_PUBLIC_FIREBASE_APP_ID`.
-4. Faça um novo deploy após salvar as variáveis.
-5. Configure Firestore Security Rules antes de usar dados reais. Este exemplo não inclui autenticação; não publique regras abertas para todos. Para uso real, adicione Firebase Authentication e restrinja o acesso a usuários autorizados.
+- **Expo** — estrutura de desenvolvimento do aplicativo.
+- **React** e **React Native Web** — interface que funciona no navegador.
+- **TypeScript** — tipagem do código.
+- **Firebase JavaScript SDK** — integração com o Firebase.
+- **Cloud Firestore** — armazenamento dos registros.
+- **Workbox** — geração do service worker para o PWA.
+- **Vercel** — build e hospedagem web.
 
-Variáveis `EXPO_PUBLIC_` são incorporadas ao bundle do navegador: não coloque segredos privados, credenciais administrativas ou service-account keys nelas. A Firebase API key de cliente não é um segredo, mas as regras do Firestore precisam proteger os dados.
+## Como os dados são armazenados
+
+O aplicativo usa a coleção `usuarios`. Cada documento contém campos equivalentes a:
+
+```json
+{
+  "nome": "Maria Silva",
+  "email": "maria@example.com",
+  "createdAt": "timestamp do Firestore",
+  "updatedAt": "timestamp do Firestore (adicionado ao editar)"
+}
+```
+
+O Firestore gera o identificador do documento. O campo `createdAt` é definido na criação; `updatedAt` é definido quando o cadastro é editado. Os timestamps são valores nativos do Firestore, e não strings literais.
+
+## Configuração do Firebase
+
+1. Abra o [Firebase Console](https://console.firebase.google.com/), crie ou selecione um projeto e habilite o **Cloud Firestore**.
+2. Registre um aplicativo Web no projeto Firebase e obtenha os valores da configuração do SDK.
+3. No projeto da Vercel, abra **Settings → Environment Variables** e configure as seguintes variáveis para os ambientes desejados (Preview e Production):
+
+   - `EXPO_PUBLIC_FIREBASE_API_KEY`
+   - `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`
+   - `EXPO_PUBLIC_FIREBASE_PROJECT_ID`
+   - `EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET`
+   - `EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+   - `EXPO_PUBLIC_FIREBASE_APP_ID`
+
+4. Faça um novo deploy depois de salvar as variáveis, pois os valores `EXPO_PUBLIC_*` são incorporados ao bundle durante o build.
+
+O arquivo `.env.example` lista os nomes esperados. Não coloque chaves privadas, credenciais administrativas ou arquivos de service account nas variáveis públicas. A configuração Firebase de cliente não substitui regras de segurança.
+
+### Segurança do Firestore
+
+Este exemplo não inclui autenticação de usuários. Antes de disponibilizar o app publicamente, configure regras de segurança apropriadas. **Não use regras que permitam leitura e escrita irrestritas para qualquer pessoa.** Para dados reais, recomenda-se integrar Firebase Authentication e autorizar somente usuários autenticados com as permissões necessárias. Enquanto as regras do Firestore negarem acesso, a interface mostrará uma mensagem de erro.
 
 ## PWA
 
-- Manifesto: `public/manifest.json`; ícone SVG em `public/icons/icon.svg`.
-- O service worker é gerado em `dist/sw.js` durante o build e precacheia os assets estáticos.
-- O CRUD do Firestore precisa de internet; as respostas do Firestore não são armazenadas em cache pelo service worker.
+- Manifesto: `public/manifest.json`.
+- Ícone: `public/icons/icon.svg`.
+- O build gera o service worker em `dist/sw.js) com Workbox e pré-armazena arquivos estáticos do app.
+- O service worker é registrado no navegador em produção.
+- O cadastro, a listagem, a edição e a exclusão no Firestore precisam de conexão com a internet. O service worker não armazena em cache as respostas do Firestore.
 
-## Validação
+## Publicação na Vercel
 
-As alterações foram gravadas no GitHub. O build ainda precisa ser executado após importar o repositório na Vercel; este processo não executou o build remoto nem acessou o Firebase Console.
+O repositório contém um `vercel.json` com o comando de build e a pasta de saída configurados.
+
+1. Acesse [Vercel — New Project](https://vercel.com/new) e conecte a conta GitHub que tem acesso ao repositório.
+2. Importe `nirrochimas/expo-pwa3321`.
+3. Use `npm run build) como **Build Command** e `dist` como **Output Directory**. O `vercel.json` já define essas opções.
+4. Selecione uma versão de Node.js compatível com o campo `engines` do `package.json` e com o Expo configurado no projeto.
+5. Configure as variáveis do Firebase descritas acima e execute o deploy.
+
+Durante o build, `scripts/print-env.cjs` registra nos logs as versões de Node, npm, npx e Git usando os comandos:
+
+```sh
+node --version
+npm --version
+npx --version
+git --version
+```
+
+## Scripts
+
+- `npm run build` — registra as versões das ferramentas, exporta o app para web e gera o service worker.
+- `npm run build:web` — alias para o build web.
+- `npm run typecheck` — executa a verificação de tipos do TypeScript.
+
+## Estrutura principal
+
+```text
+.
+├── App.tsx                 # Interface de cadastro, listagem, edição e exclusão
+├── app.json                # Configuração Expo
+├── package.json            # Dependências e scripts
+├── vercel.json             # Configuração de build/publicação
+├── workbox-config.cjs      # Configuração do service worker
+├── scripts/
+│   └── print-env.cjs        # Versões de Node, npm, npx e Git nos logs
+├── public/
+│   ├── manifest.json       # Metadados do PWA
+│   └── icons/icon.svg      # Ícone do aplicativo
+└── src/
+    ├── firebase.ts         # Inicialização do Firebase
+    └── users.ts            # Operações CRUD do Firestore
+```
+
+## Estado da validação
+
+A configuração e o código estão versionados no GitHub. O build precisa ser confirmado nos logs da Vercel depois da importação do projeto, e as operações com dados reais precisam ser verificadas após configurar o Firebase e as regras de segurança.
